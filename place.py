@@ -4,7 +4,7 @@ class Place:
 
     def __init__(self, name):
         """Initialze the object."""
-        self._name = name
+        self.name = name
         self._resources = []
         self._ingoing_connections = []
         self._outgoing_connections = []
