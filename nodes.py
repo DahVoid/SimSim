@@ -38,12 +38,12 @@ class Node(Place):
 class Factory(Node):
     """Factory node, produces a product when a worker is present."""
 
-    __static_id = 0
+    __id = 0
 
     def __init__(self):
         """Create the Factory, assign id."""
-        super().__init__("Factory" + str(Factory.__static_id))
-        Factory.__static_id += 1
+        super().__init__("Factory" + str(Factory.__id))
+        Factory.__id += 1
 
     def reduce_viability(self, worker):
         """Why hurt the worker? :(."""
@@ -66,12 +66,12 @@ class Factory(Node):
 class Field(Node):
     """Field node, produces food when a worker is present."""
     
-    __static_id = 0
+    __id = 0
 
     def __init__(self):
         """Create the Field, assign id."""
-        super().__init__("Field" + str(Field.__static_id))
-        Field.__static_id += 1
+        super().__init__("Field" + str(Field.__id))
+        Field.__id += 1
     
     def produce(self):
         """Create new produce."""
@@ -89,12 +89,12 @@ class Field(Node):
 class DiningRoom(Node):
     """DiningRoom node, restores worker viability."""
 
-    __static_id = 0
+    __id = 0
 
     def __init__(self):
         """Create the Factory, assign id."""
-        super().__init__("Factory" + str(Factory.__static_id))
-        Factory.__static_id += 1
+        super().__init__("Factory" + str(Factory.__id))
+        Factory.__id += 1
 
     def reduce_viability(self, worker):
         """Why hurt the worker? :(."""
