@@ -8,7 +8,7 @@ class Container(Place):
         """Initialize the container."""
         super().__init__(name)
     
-    def virtual_insert(self, resource):
+    def insert(self, resource):
         """Add resource to resources list."""
         self._resources.append(resource)
 
@@ -33,3 +33,10 @@ class Road(Container):
         """Initialize and sets name."""
         super().__init__("Road")
     
+    def reduce_viabilty(self, worker):
+        """Traffic hurts the worker and might even kill it."""
+        if worker.update_viability(-10 * len(self._resources)) == 0:
+            del worker
+        else:
+            pass
+            
