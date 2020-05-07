@@ -3,6 +3,8 @@ from place import Place
 from resource import Food, Product, Worker
 from time import sleep
 from random import randint
+
+
 class Node(Place):
     """Superclass for producing classes."""
 
@@ -19,13 +21,19 @@ class Node(Place):
         """Produce product."""
         raise NotImplementedError
 
-    def use_resources(self):
-        """#Consume the resources."""
+    def consume_resources(self):
+        """Consume the resources."""
         # We trust that our get_resource bring the correct ones.
         for resource in self._resources:
             if not "Worker" in resource.name:
                 del resource
         return True
+
+    def find_resource(self, resource_type):
+        """Find a local resource by given string."""
+        for resource in self._resources:
+            if resource_type in resource.name:
+                return resource
 
     def _check_demand(self):
         pass
@@ -48,7 +56,7 @@ class Factory(Node):
 
     def produce(self, worker):
         """Create new produce and stores it locally."""
-        self.use_resources()
+        self.consume_resources()
         # Don't subtract worker viability in sleep in order to avoid dividing by 0.
         sleep(100/worker.update_viability(0))
         worker.update_viability(-10)
@@ -76,7 +84,7 @@ class Field(Node):
     
     def produce(self):
         """Create new produce."""
-        self.use_resources()
+        self.consume_resources()
         self._resources.append(Food())
         return
 
@@ -101,7 +109,7 @@ class DiningRoom(Node):
 
     def produce(self, worker):
         """Create new produce."""
-        self.use_resources()
+        self.consume_resources()
         food_value = randint(10, 40)
 
         if self.random_accident():

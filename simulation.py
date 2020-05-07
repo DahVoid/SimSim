@@ -1,4 +1,11 @@
-"""Main file put code here."""
+"""Simulation"""
 
-if __name__ == "__main__":
-    pass
+import cointainers
+from resource import Worker
+import nodes
+
+class Simulation:
+
+    def __init__(self):
+        pass
+    
