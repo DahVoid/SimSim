@@ -38,5 +38,5 @@ class Road(Container):
         if worker.update_viability(-10 * len(self._resources)) == 0:
             del worker
         else:
-            pass
+            return
             

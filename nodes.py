@@ -1,6 +1,8 @@
 """Cointains the classes responsible for producing resources."""
 from place import Place
-
+from resource import Food, Product, Worker
+from time import sleep
+from random import randint
 class Node(Place):
     """Superclass for producing classes."""
 
@@ -34,7 +36,6 @@ class Node(Place):
     def _increase_supply(self):
         pass
 
-
 class Factory(Node):
     """Factory node, produces a product when a worker is present."""
 
@@ -45,23 +46,23 @@ class Factory(Node):
         super().__init__("Factory" + str(Factory.__id))
         Factory.__id += 1
 
-    def reduce_viability(self, worker):
-        """Why hurt the worker? :(."""
-        pass
-    
-    def produce(self):
-        """Create new produce."""
+    def produce(self, worker):
+        """Create new produce and stores it locally."""
         self.use_resources()
-        pass
+        # Don't subtract worker viability in sleep in order to avoid dividing by 0.
+        sleep(100/worker.update_viability(0))
+        worker.update_viability(-10)
+        self._resources.append(Product())
+        return
 
     def random_accident(self, worker):
         """Oh boy here I go killing again."""
-        pass
+        if randint(1,10) <= 2:
+            worker.update_viability(-100)
 
     def update(self):
         """Run an update cycle on the factory."""
         pass
-
 
 class Field(Node):
     """Field node, produces food when a worker is present."""
@@ -76,11 +77,13 @@ class Field(Node):
     def produce(self):
         """Create new produce."""
         self.use_resources()
-        pass
+        self._resources.append(Food())
+        return
 
     def random_accident(self, worker):
         """Oh boy here I go killing again."""
-        pass
+        if randint(1,10) <= 2:
+            worker.update_viability(-100)
 
     def update(self):
         """Run an update cycle on the factory."""
@@ -96,18 +99,22 @@ class DiningRoom(Node):
         super().__init__("Factory" + str(Factory.__id))
         Factory.__id += 1
 
-    def reduce_viability(self, worker):
-        """Why hurt the worker? :(."""
-        pass
-    
-    def produce(self):
+    def produce(self, worker):
         """Create new produce."""
         self.use_resources()
-        pass
+        food_value = randint(10, 40)
 
-    def random_accident(self, worker):
+        if self.random_accident():
+            worker.update_viability(-food_value)
+        else:
+            worker.update_viability(food_value)
+        
+    def random_accident(self):
         """Oh boy here I go killing again."""
-        pass
+        if randint(1,5) == 1:
+            return True
+        else:
+             return False
 
     def update(self):
         """Run an update cycle on the factory."""
