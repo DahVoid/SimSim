@@ -8,6 +8,10 @@ from random import randint
 class Node(Place):
     """Superclass for producing classes."""
 
+    barn = None
+    road = None
+    magazine = None
+
     def __init__(self, name):
         """Initialize the Node."""
         super().__init__(name)
@@ -29,20 +33,26 @@ class Node(Place):
                 del resource
         return True
 
+    def get_resource(self, resource_type):
+        """Get a "Worker", "Food" or "Product" from their respective cointainer"""
+
+        if resource_type == "Worker" and len(Node.road._resources) > 0:
+            self._resources.append(Node.road.get_resource)
+            return True
+        elif resource_type == "Food" and len(Node.barn._resources) > 0:
+            self._resources.append(Node.road.get_resource)
+            return True
+        elif resource_type == "Product" and len(Node.magazine._resources) > 0:
+            self._resources.append(Node.road.get_resource)
+            return True
+        else:
+            return False
+
     def find_resource(self, resource_type):
         """Find a local resource by given string."""
         for resource in self._resources:
             if resource_type in resource.name:
                 return resource
-
-    def _check_demand(self):
-        pass
-
-    def _lower_supply(self):
-        pass
-    
-    def _increase_supply(self):
-        pass
 
 class Factory(Node):
     """Factory node, produces a product when a worker is present."""
@@ -53,7 +63,7 @@ class Factory(Node):
         """Create the Factory, assign id."""
         super().__init__("Factory" + str(Factory.__id))
         Factory.__id += 1
-
+  
     def produce(self, worker):
         """Create new produce and stores it locally."""
         self.consume_resources()
@@ -70,7 +80,16 @@ class Factory(Node):
 
     def update(self):
         """Run an update cycle on the factory."""
-        pass
+        # get resources
+        if self.get_resource("Worker"):
+
+        
+        # use resources
+
+
+        # return 
+            pass
+        
 
 class Field(Node):
     """Field node, produces food when a worker is present."""
@@ -81,6 +100,7 @@ class Field(Node):
         """Create the Field, assign id."""
         super().__init__("Field" + str(Field.__id))
         Field.__id += 1
+        self
     
     def produce(self):
         """Create new produce."""
@@ -95,17 +115,24 @@ class Field(Node):
 
     def update(self):
         """Run an update cycle on the factory."""
-        pass
+        # get resources
+        if self.get_resource("Worker"):
 
-class DiningRoom(Node):
-    """DiningRoom node, restores worker viability."""
+        
+        # use resources
+
+
+        # return 
+            pass
+class Dining_room(Node):
+    """Dining_room node, restores worker viability."""
 
     __id = 0
 
     def __init__(self):
         """Create the Factory, assign id."""
-        super().__init__("Factory" + str(Factory.__id))
-        Factory.__id += 1
+        super().__init__("Dining_room" + str(Dining_room.__id))
+        Dining_room.__id += 1
 
     def produce(self, worker):
         """Create new produce."""
@@ -126,4 +153,44 @@ class DiningRoom(Node):
 
     def update(self):
         """Run an update cycle on the factory."""
-        pass
+        # get resources
+        if self.get_resource("Worker"):
+
+        
+        # use resources
+
+
+        # return 
+
+class Flat(Node):
+    """Flat node, restores worker viability."""
+
+    __id = 0
+
+    def __init__(self):
+        """Create the Flat, assign id."""
+        super().__init__("Flat" + str(Flat.__id))
+        Flat.__id += 1
+
+    def produce(self, worker):
+        """Create new produce."""
+        self.consume_resources()
+        raise NotImplementedError
+        
+    def random_accident(self):
+        """Oh boy here I go killing again."""
+        if randint(1,5) == 1:
+            return True
+        else:
+             return False
+
+    def update(self):
+        # get resources
+        if self.get_resource("Worker"):
+
+        
+        # use resources
+
+
+        # return 
+            pass

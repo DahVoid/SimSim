@@ -8,9 +8,12 @@ class Container(Place):
         """Initialize the container."""
         super().__init__(name)
     
-    def insert(self, resource):
+    def insert_resource(self, resource):
         """Add resource to resources list."""
         self._resources.append(resource)
+    
+    def get_resource(self):
+        return self._resources.pop(0)
 
 class Magazine(Container): 
     """Magazine stores products."""

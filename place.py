@@ -1,4 +1,4 @@
-"""Module cointaining the place class, the super class for all visitable places. Todo: delete connections between places."""
+"""Module cointaining the place class, the super class for all visitable places. Todo: delete connections between places. FLytta ner i Node och container? lite för generell."""
 class Place:
     """Super class to all the visitable places."""
 
@@ -6,11 +6,10 @@ class Place:
         """Initialze the object."""
         self.name = name
         self._resources = []
-        self._ingoing_connections = []
-        self._outgoing_connections = []
     
+    """
     def connect_place(self, place):
-        """Create a connection from self to another place."""
+    #Create a connection from self to another place.
         self.connect_outgoing(place)
         place.connect_ingoing(self)
         # Debatable if return is needed.
@@ -20,11 +19,11 @@ class Place:
             return False
 
     def connect_ingoing(self, place):
-        """Create an ingoing connection from place to self."""
+        #reate an ingoing connection from place to self.
         self._ingoing_connections.append(place)
 
     def connect_outgoing(self, place):
-        """Crearte an outgoing connection from self to place."""
+        #Create an outgoing connection from self to place.#
         self._outgoing_connections.append(place)
-    
+    """
         
