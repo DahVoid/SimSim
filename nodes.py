@@ -36,13 +36,13 @@ class Node(Place):
     def get_resource(self, resource_type):
         """Get a "Worker", "Food" or "Product" from their respective cointainer"""
 
-        if resource_type == "Worker" and len(Node.road._resources) > 0:
+        if resource_type == "Worker" and self.road.get_inventory() > 0:
             self._resources.append(Node.road.get_resource)
             return True
-        elif resource_type == "Food" and len(Node.barn._resources) > 0:
+        elif resource_type == "Food" and self.barn.get_inventory() > 0:
             self._resources.append(Node.road.get_resource)
             return True
-        elif resource_type == "Product" and len(Node.magazine._resources) > 0:
+        elif resource_type == "Product" and self.magazine.get_inventory() > 0:
             self._resources.append(Node.road.get_resource)
             return True
         else:
@@ -52,7 +52,7 @@ class Node(Place):
         """Find a local resource by given string."""
         for resource in self._resources:
             if resource_type in resource.name:
-                return resource
+                return self._resource.pop(self._resources.index(resource))
 
 class Factory(Node):
     """Factory node, produces a product when a worker is present."""
@@ -81,14 +81,13 @@ class Factory(Node):
     def update(self):
         """Run an update cycle on the factory."""
         # get resources
-        if self.get_resource("Worker"):
-
-        
-        # use resources
-
-
-        # return 
-            pass
+        if self.road.get_inventory() > 0:
+            self.get_resource("Worker")
+            self.produce(self.find_resource(Worker))
+            self.magazine.insert_resource(self.find_resource("Product"))
+            self.road.insert_resource(self.find_resource("Worker"))
+        else:
+           self._time_idle += 1
         
 
 class Field(Node):
@@ -114,16 +113,19 @@ class Field(Node):
             worker.update_viability(-100)
 
     def update(self):
-        """Run an update cycle on the factory."""
+        """Run an update cycle on the field."""
         # get resources
         if self.get_resource("Worker"):
 
+        else:
+            pass
         
         # use resources
 
 
         # return 
             pass
+
 class Dining_room(Node):
     """Dining_room node, restores worker viability."""
 
@@ -161,6 +163,7 @@ class Dining_room(Node):
 
 
         # return 
+            pass
 
 class Flat(Node):
     """Flat node, restores worker viability."""

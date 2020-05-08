@@ -9,11 +9,18 @@ class Container(Place):
         super().__init__(name)
     
     def insert_resource(self, resource):
-        """Add resource to resources list."""
+        """Add resource to resources list, won't insert dead workers."""
+        if "Worker" in resource.name
+            if resource.update_viability == 0:
+                del resource
+
         self._resources.append(resource)
     
     def get_resource(self):
         return self._resources.pop(0)
+
+    def get_inventory(self):
+        return len(self._resources)
 
 class Magazine(Container): 
     """Magazine stores products."""
