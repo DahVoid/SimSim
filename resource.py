@@ -5,7 +5,7 @@ class resource:
 class Worker(resource):
     __id = 0
     def __init__(self):
-        super.__init__("Worker" + str(Worker.__id))
+        super().__init__("Worker" + str(Worker.__id))
         Worker.__id += 1
         self.viability = 100 # gör privat
     

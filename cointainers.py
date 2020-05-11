@@ -10,7 +10,7 @@ class Container(Place):
     
     def insert_resource(self, resource):
         """Add resource to resources list, won't insert dead workers."""
-        if "Worker" in resource.name
+        if "Worker" in resource.name:
             if resource.update_viability == 0:
                 del resource
 
@@ -43,6 +43,12 @@ class Road(Container):
         """Initialize and sets name."""
         super().__init__("Road")
     
+    def get_resource(self):
+        """Reduces worker vialility on the way to work."""
+        self.reduce_viabilty(self._resources[0])
+        return self._resources.pop(0)
+
+
     def reduce_viabilty(self, worker):
         """Traffic hurts the worker and might even kill it."""
         if worker.update_viability(-10 * len(self._resources)) == 0:

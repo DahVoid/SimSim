@@ -52,7 +52,7 @@ class Node(Place):
         """Find a local resource by given string."""
         for resource in self._resources:
             if resource_type in resource.name:
-                return self._resource.pop(self._resources.index(resource))
+                return self._resources.pop(self._resources.index(resource))
 
 class Factory(Node):
     """Factory node, produces a product when a worker is present."""
@@ -114,17 +114,14 @@ class Field(Node):
 
     def update(self):
         """Run an update cycle on the field."""
-        # get resources
-        if self.get_resource("Worker"):
-
+        if self.road.get_inventory() > 0:
+            self.get_resource("Worker")
+            self.produce()
+            self.barn.insert_resource(self.find_resource("Product"))
+            self.road.insert_resource(self.find_resource("Worker"))
         else:
-            pass
+           self._time_idle += 1
         
-        # use resources
-
-
-        # return 
-            pass
 
 class Dining_room(Node):
     """Dining_room node, restores worker viability."""
@@ -154,16 +151,14 @@ class Dining_room(Node):
              return False
 
     def update(self):
-        """Run an update cycle on the factory."""
-        # get resources
-        if self.get_resource("Worker"):
-
-        
-        # use resources
-
-
-        # return 
-            pass
+        """Run an update cycle on the dining room."""
+        if self.barn.get_inventory() > 0 and self.road.get_inventory() > 0:
+            self.get_resource("Worker")
+            self.produce(self.find_resource(Worker))
+            self.road.insert_resource(self.find_resource("Worker"))
+        else:
+            self._time_idle += 1
+    
 
 class Flat(Node):
     """Flat node, restores worker viability."""
@@ -175,11 +170,15 @@ class Flat(Node):
         super().__init__("Flat" + str(Flat.__id))
         Flat.__id += 1
 
-    def produce(self, worker):
+    def rest(self, worker):
         """Create new produce."""
         self.consume_resources()
-        raise NotImplementedError
-        
+        worker.update_viability(randint(10, 40))
+    
+    def reprocreate(self):
+        self.consume_resources()
+        self._resources.append(Worker())
+
     def random_accident(self):
         """Oh boy here I go killing again."""
         if randint(1,5) == 1:
@@ -188,12 +187,21 @@ class Flat(Node):
              return False
 
     def update(self):
-        # get resources
-        if self.get_resource("Worker"):
-
+        """Run an update cycle on the dining room. add reproduce bool to adjust late?"""
         
-        # use resources
-
-
-        # return 
-            pass
+        if self.magazine.get_inventory() > 0 and self.road.get_inventory() > 0:
+            self.get_resource("Worker")
+            self.get_resource("Product")
+            if self.road.get_inventory() > 0:
+                self.get_resource(Worker)
+                self.reprocreate()
+                self.road.insert_resource(self.find_resource("Worker"))
+                self.road.insert_resource(self.find_resource("Worker"))
+                self.road.insert_resource(self.find_resource("Worker"))
+            else:
+                self.get_resource("Worker")
+                self.rest(self.find_resource("Worker"))
+                self.road.insert_resource(self.find_resource("Worker"))
+        else:
+            self._time_idle += 1
+    
