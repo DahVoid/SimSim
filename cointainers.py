@@ -1,4 +1,6 @@
 """Contains the container classes."""
+from resource import Worker
+
 class Container():
     """Subclass to Place and super class to the container classes."""
 
@@ -10,11 +12,12 @@ class Container():
     def insert_resource(self, resource):
         """Add resource to resources list, won't insert dead workers."""
         if "Worker" in resource.name:
-            if resource.update_viability == 0:
+            if resource.update_viability(0) == 0:
                 del resource
+                return
+        else:
+             self._resources.append(resource)    
 
-        self._resources.append(resource)
-    
     def get_resource(self):
         return self._resources.pop(0)
 
@@ -50,8 +53,6 @@ class Road(Container):
 
     def reduce_viabilty(self, worker):
         """Traffic hurts the worker and might even kill it."""
-        if worker.update_viability(-10 * len(self._resources)) == 0:
-            del worker
-        else:
-            return
+        worker.update_viability(-10 * len(self._resources))
+        return
             

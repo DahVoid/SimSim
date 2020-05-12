@@ -54,6 +54,6 @@ if __name__ == "__main__":
 
     i = 0
 
-    while i < 30:
+    while i < 50000:
         sim.update()
         i += 1

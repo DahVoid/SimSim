@@ -1,8 +1,8 @@
-class resource:
+class Resource:
     def __init__(self, name):
         self.name = name
 
-class Worker(resource):
+class Worker(Resource):
     __id = 0
     def __init__(self):
         super().__init__("Worker" + str(Worker.__id))
@@ -20,15 +20,15 @@ class Worker(resource):
 
         return self.viability
 
-class Food(resource):
+class Food(Resource):
     __id = 0
     def __init__(self):
-        super.__init__("Food" + str(Food.__id))
+        super().__init__("Food" + str(Food.__id))
         Food.__id += 1
 
-class Product(resource):
+class Product(Resource):
     __id = 0
     def __init__(self):
-        super.__init__("Product" + str(Product.__id))
+        super().__init__("Product" + str(Product.__id))
         Product.__id += 1
 

@@ -37,22 +37,22 @@ class Node():
         """Get a "Worker", "Food" or "Product" from their respective cointainer"""
 
         if resource_type == "Worker" and self.road.get_inventory() > 0:
-            self._resources.append(Node.road.get_resource)
-            return True
+            self._resources.append(Node.road.get_resource())
+
         elif resource_type == "Food" and self.barn.get_inventory() > 0:
-            self._resources.append(Node.road.get_resource)
-            return True
+            self._resources.append(Node.barn.get_resource())
+
         elif resource_type == "Product" and self.magazine.get_inventory() > 0:
-            self._resources.append(Node.road.get_resource)
-            return True
+            self._resources.append(Node.magazine.get_resource())
         else:
-            return False
+            raise ValueError()
 
     def find_resource(self, resource_type):
         """Find a local resource by given string."""
         for resource in self._resources:
             if resource_type in resource.name:
-                return self._resources.pop(self._resources.index(resource))
+                self._resources.remove(resource)
+                return resource
 
 class Factory(Node):
     """Factory node, produces a product when a worker is present."""
@@ -83,7 +83,7 @@ class Factory(Node):
         # get resources
         if self.road.get_inventory() > 0:
             self.get_resource("Worker")
-            self.produce(self.find_resource(Worker))
+            self.produce(self.find_resource("Worker"))
             self.magazine.insert_resource(self.find_resource("Product"))
             self.road.insert_resource(self.find_resource("Worker"))
         else:
@@ -116,7 +116,7 @@ class Field(Node):
         if self.road.get_inventory() > 0:
             self.get_resource("Worker")
             self.produce()
-            self.barn.insert_resource(self.find_resource("Product"))
+            self.barn.insert_resource(self.find_resource("Food"))
             self.road.insert_resource(self.find_resource("Worker"))
         else:
            self._time_idle += 1
@@ -154,7 +154,7 @@ class Dining_room(Node):
         if self.barn.get_inventory() > 0 and self.road.get_inventory() > 0:
             self.get_resource("Worker")
             self.get_resource("Food")
-            self.produce(self.find_resource(Worker))
+            self.produce(self.find_resource("Worker"))
             self.road.insert_resource(self.find_resource("Worker"))
         else:
             self._time_idle += 1
@@ -193,7 +193,7 @@ class Flat(Node):
             self.get_resource("Worker")
             self.get_resource("Product")
             if self.road.get_inventory() > 0:
-                self.get_resource(Worker)
+                self.get_resource("Worker")
                 self.reprocreate()
                 self.road.insert_resource(self.find_resource("Worker"))
                 self.road.insert_resource(self.find_resource("Worker"))
