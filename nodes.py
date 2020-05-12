@@ -1,11 +1,10 @@
 """Cointains the classes responsible for producing resources."""
-from place import Place
 from resource import Food, Product, Worker
 from time import sleep
 from random import randint
 
 
-class Node(Place):
+class Node():
     """Superclass for producing classes."""
 
     barn = None
@@ -14,7 +13,8 @@ class Node(Place):
 
     def __init__(self, name):
         """Initialize the Node."""
-        super().__init__(name)
+        self.name = name
+        self._resources = []
         self._time_idle = 0
     
     def update(self):
@@ -28,9 +28,9 @@ class Node(Place):
     def consume_resources(self):
         """Consume the resources."""
         # We trust that our get_resource bring the correct ones.
-        for resource in self._resources:
-            if not "Worker" in resource.name:
-                del resource
+        for item in self._resources:
+            if not "Worker" in item.name:
+                del item
         return True
 
     def get_resource(self, resource_type):
@@ -103,7 +103,6 @@ class Field(Node):
     
     def produce(self):
         """Create new produce."""
-        self.consume_resources()
         self._resources.append(Food())
         return
 
@@ -154,6 +153,7 @@ class Dining_room(Node):
         """Run an update cycle on the dining room."""
         if self.barn.get_inventory() > 0 and self.road.get_inventory() > 0:
             self.get_resource("Worker")
+            self.get_resource("Food")
             self.produce(self.find_resource(Worker))
             self.road.insert_resource(self.find_resource("Worker"))
         else:

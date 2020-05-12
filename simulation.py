@@ -25,7 +25,7 @@ class Simulation:
 
         nodes.Node.barn = self.barn
         nodes.Node.road = self.road
-        nodes.Node.Magazine = self.magazine
+        nodes.Node.magazine = self.magazine
 
         for _ in range(5):
             self.road.insert_resource(resource.Worker())

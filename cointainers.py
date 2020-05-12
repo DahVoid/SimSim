@@ -1,12 +1,11 @@
 """Contains the container classes."""
-from place import Place
-
-class Container(Place):
+class Container():
     """Subclass to Place and super class to the container classes."""
 
     def __init__(self, name):
         """Initialize the container."""
-        super().__init__(name)
+        self.name = name
+        self._resources = []
     
     def insert_resource(self, resource):
         """Add resource to resources list, won't insert dead workers."""
