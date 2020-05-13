@@ -3,11 +3,12 @@ from resource import Worker
 
 class Container():
     """Subclass to Place and super class to the container classes."""
-
-    def __init__(self, name):
+    gui = None
+    def __init__(self, name, gui_properties):
         """Initialize the container."""
         self.name = name
         self._resources = []
+        self.container_ui = Container.gui.create_place_ui(gui_properties)
     
     def insert_resource(self, resource):
         """Add resource to resources list, won't insert dead workers."""
@@ -15,8 +16,10 @@ class Container():
             if resource.update_viability(0) == 0:
                 del resource
                 return
+            else:
+                self._resources.append(resource)
         else:
-             self._resources.append(resource)    
+            self._resources.append(resource)    
 
     def get_resource(self):
         return self._resources.pop(0)
@@ -29,21 +32,21 @@ class Magazine(Container):
 
     def __init__(self):
         """Initialize and sets name."""
-        super().__init__("Magazine")
+        super().__init__("Magazine", {})
 
 class Barn(Container):
     """Barn stores food."""
 
     def __init__(self):
         """Initialize and sets name."""
-        super().__init__("Barn")
+        super().__init__("Barn", {})
 
 class Road(Container): 
     """Stores workers while they are moving."""
     
     def __init__(self):
         """Initialize and sets name."""
-        super().__init__("Road")
+        super().__init__("Road", {})
     
     def get_resource(self):
         """Reduces worker vialility on the way to work."""
