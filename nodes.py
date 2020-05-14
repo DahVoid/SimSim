@@ -86,6 +86,7 @@ class Node():
           
     def find_resource(self, resource_type):
         """Find a local resource by given string."""
+        #todo  fix this so we dont have to return the worker
         for resource in self._resources:
             if resource_type in resource.name:
                 self._resources.remove(resource)
@@ -106,7 +107,7 @@ class Factory(Node):
     def produce(self, worker):
         """Create new produce and stores it locally."""
         # Don't subtract worker viability in sleep in order to avoid dividing by 0.
-        sleep(100/worker.update_viability(0))
+        sleep(1 + 20/worker.update_viability(0))
         worker.update_viability(-10)
         __produce = Product()
         self._resources.append(__produce)
@@ -115,20 +116,26 @@ class Factory(Node):
         # Put back woker in inventory
         self._resources.append(worker)
 
-        return
-
     def random_accident(self, worker):
         """Oh boy here I go killing again."""
         if randint(1,10) <= 2:
             worker.update_viability(-100)
-
+ 
     def update(self):
         """Run an update cycle on the factory."""
         if self.road.get_inventory() > 0:
             self.get_resource("Worker")
-            self.produce(self.find_resource("Worker"))
-            self.return_resource("Product")
-            self.return_resource("Worker")
+            __worker = self.find_resource("Worker")
+            # Put back woker in inventory
+            self._resources.append(__worker)
+            self.random_accident(__worker)
+            if __worker.update_viability(0) < 1:
+                self.return_resource("Worker")
+                return
+            else:
+                self.produce(self.find_resource("Worker"))
+                self.return_resource("Product")
+                self.return_resource("Worker")
         else:
            self._time_idle += 1
         
@@ -218,7 +225,7 @@ class Flat(Node):
     """Flat node, restores worker viability."""
 
     __id = 0
-    __gui_properties = {"lable":"Flat (Lokalen)", "color":"#00c993", "fill":"#ffffff"}
+    __gui_properties = {"lable":"Lokalen™", "color":"#00c993", "fill":"#000000"}
 
     def __init__(self):
         """Create the Flat, assign id."""
@@ -229,7 +236,7 @@ class Flat(Node):
     def rest(self, worker):
         """Create new produce."""
         self.consume_resources()
-        worker.update_viability(randint(10, 40))
+        worker.update_viability(randint(10, 60))
         # Put back worker to inventory
         self._resources.append(worker)
     
@@ -237,8 +244,8 @@ class Flat(Node):
         __child = Worker()
         self._resources.append(__child)
         self.node_ui.add_token(__child.resource_ui)
+        Node.gui.update_ui()
 
-    def random_accident(self):
         """Oh boy here I go killing again."""
         if randint(1,5) == 1:
             return True
@@ -248,15 +255,21 @@ class Flat(Node):
     def update(self):
         """Run an update cycle on the dining room. add reproduce bool to adjust late?"""
         
-        if self.magazine.get_inventory() > 0 and self.road.get_inventory() > 0:
+        if self.magazine.get_inventory() > 0 :
             self.get_resource("Worker")
             self.get_resource("Product")
+            sleep(1)
             if self.road.get_inventory() > 0:
                 self.get_resource("Worker")
+                sleep(1)
                 self.consume_resources()
+                sleep(1)
                 self.reprocreate()
+                sleep(1)
                 self.return_resource("Worker")
+                sleep(0.3)
                 self.return_resource("Worker")
+                sleep(0.3)
                 self.return_resource("Worker")
             else:
                 self.consume_resources()

@@ -55,7 +55,7 @@ class Simulation:
         shuffle(self.priority_list)
 
     def stop_simulation(self):
-        pass
+        self.gui.shoot()
 
     def start_gui(self):
         self.barn.container_ui.autoplace(0,3)
@@ -72,6 +72,8 @@ class Simulation:
         for node in self.priority_list:
             self.gui.update_ui()  
             node.update()
+            if self.road.get_inventory() == 0:
+                break
             sleep(0.1)
         
 if __name__ == "__main__":
@@ -79,7 +81,12 @@ if __name__ == "__main__":
 
     i = 0
     sim.start_gui()
-    while i < 60:
+    sim.update()
+
+    while sim.road.get_inventory() > 0:
         sim.update()
         
         i += 1
+    print("Amount of update cycles: " + str(i))
+    input()
+    sim.stop_simulation()

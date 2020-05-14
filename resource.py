@@ -6,7 +6,7 @@ class Resource:
 
 class Worker(Resource):
     __id = 0
-    __gui_properties = {"color":"#000000"}
+    __gui_properties = {"color":"#888888"}
     def __init__(self):
         super().__init__("Worker" + str(Worker.__id), Worker.__gui_properties)
         Worker.__id += 1
@@ -14,7 +14,7 @@ class Worker(Resource):
     
     def update_viability(self, value):
         """Change the viability by the parameter. Return the current viability."""
-        self.viability + value
+        self.viability += value
         
         if self.viability > 100:
             self.viability = 100
