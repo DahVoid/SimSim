@@ -19,8 +19,8 @@ class Node():
         self._resources = []
         self._time_idle = 0
         self.node_ui = self.gui.create_transition_ui(gui_properties)
-        Node.gui.connect(self.node_ui, Node.road.container_ui, {})
-        Node.gui.connect(Node.road.container_ui, self.node_ui, {})
+        Node.gui.connect(self.node_ui, Node.road.container_ui, {"arrows":True})
+        Node.gui.connect(Node.road.container_ui, self.node_ui, {"arrows":True})
     
     def update(self):
         """Update the state of the node."""
@@ -102,7 +102,7 @@ class Factory(Node):
         """Create the Factory, assign id."""
         super().__init__("Factory" + str(Factory.__id),Factory.__gui_properties)
         Factory.__id += 1
-        Node.gui.connect(self.node_ui, Node.magazine.container_ui, {})
+        Node.gui.connect(self.node_ui, Node.magazine.container_ui, {"arrows":True})
     
     def produce(self, worker):
         """Create new produce and stores it locally."""
@@ -118,7 +118,7 @@ class Factory(Node):
 
     def random_accident(self, worker):
         """Oh boy here I go killing again."""
-        if randint(1,10) <= 2:
+        if randint(1,20) == 1:
             worker.update_viability(-100)
  
     def update(self):
@@ -149,11 +149,11 @@ class Field(Node):
         """Create the Field, assign id."""
         super().__init__("Field" + str(Field.__id), Field.__gui_properties)
         Field.__id += 1
-        Node.gui.connect(self.node_ui, Node.barn.container_ui, {})
+        Node.gui.connect(self.node_ui, Node.barn.container_ui, {"arrows":True})
     
     def random_accident(self, worker):
         """Oh boy here I go killing again."""
-        if randint(1,10) <= 2:
+        if randint(1,20) == 1:
             worker.update_viability(-100)
 
     def produce(self, worker):
@@ -187,7 +187,7 @@ class Dining_room(Node):
         """Create the Factory, assign id."""
         super().__init__("Dining_room" + str(Dining_room.__id), Dining_room.__gui_properties)
         Dining_room.__id += 1
-        Node.gui.connect(Node.barn.container_ui, self.node_ui, {})
+        Node.gui.connect(Node.barn.container_ui, self.node_ui, {"arrows":True})
 
     def produce(self, worker):
         """Create new produce."""
@@ -204,7 +204,7 @@ class Dining_room(Node):
         
     def random_accident(self):
         """Oh boy here I go killing again."""
-        if randint(1,5) == 1:
+        if randint(1,20) == 1:
             return True
         else:
              return False
@@ -230,7 +230,8 @@ class Flat(Node):
         """Create the Flat, assign id."""
         super().__init__("Flat" + str(Flat.__id), Flat.__gui_properties)
         Flat.__id += 1
-        Node.gui.connect(Node.magazine.container_ui, self.node_ui,{})
+        Node.gui.connect(Node.magazine.container_ui, self.node_ui,{"arrows":True})
+        self.procreating = True
 
     def rest(self, worker):
         """Create new produce."""
@@ -245,13 +246,19 @@ class Flat(Node):
         self.node_ui.add_token(__child.resource_ui)
         Node.gui.update_ui()
 
+    def toggle_procreating(self, procreate):
+        if procreate:
+            self.procreating = False
+        else:
+            self.procreating = True
+
     def update(self):
         """Run an update cycle on the dining room. add reproduce bool to adjust late?"""
         
         if self.magazine.get_inventory() > 0 :
             self.get_resource("Worker")
             self.get_resource("Product")
-            if self.road.get_inventory() > 0  and self.road.get_inventory() < 10 :
+            if self.road.get_inventory() > 0  and self.procreating:
                 self.get_resource("Worker")
                 self.consume_resources()
                 self.reprocreate()
