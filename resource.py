@@ -32,7 +32,7 @@ class Food(Resource):
 
 class Product(Resource):
     __id = 0
-    __gui_properties = {"color":"#00ffff"}
+    __gui_properties = {"color":"#dddd77"}
     def __init__(self):
         super().__init__("Product" + str(Product.__id), Product.__gui_properties)
         Product.__id += 1

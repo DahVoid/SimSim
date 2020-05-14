@@ -1,4 +1,5 @@
 """Cointains the classes responsible for producing resources."""
+# Todo look at dining room rest or reprocreate
 from resource import Food, Product, Worker
 from time import sleep
 from random import randint
@@ -34,9 +35,12 @@ class Node():
         # We trust that our get_resource bring the correct ones.
         for item in self._resources:
             if not "Worker" in item.name:
+                self.node_ui.remove_token(item.resource_ui)
+                Node.gui.remove(item.resource_ui)
+                self._resources.remove(item)
                 del item
-        return True
-
+                Node.gui.update_ui()
+                
     def get_resource(self, resource_type):
         """Get a "Worker", "Food" or "Product" from their respective cointainer"""
         __resource = None
@@ -44,14 +48,17 @@ class Node():
             __resource = Node.road.get_resource()
             self._resources.append(__resource)
             self.node_ui.add_token(__resource.resource_ui)
+            Node.gui.update_ui()
         elif resource_type == "Food" and self.barn.get_inventory() > 0:
             __resource = Node.barn.get_resource()
             self._resources.append(__resource)
             self.node_ui.add_token(__resource.resource_ui)
+            Node.gui.update_ui()
         elif resource_type == "Product" and self.magazine.get_inventory() > 0:
             __resource = Node.magazine.get_resource()
             self._resources.append(__resource)
             self.node_ui.add_token(__resource.resource_ui)
+            Node.gui.update_ui()
         else:
             raise ValueError()   
         
@@ -62,15 +69,18 @@ class Node():
         if "Worker" in _resource.name:
             self.road.insert_resource(_resource)
             self.node_ui.remove_token(_resource.resource_ui)
-            return
+            Node.gui.update_ui()
+            
         elif "Food" in _resource.name:
             self.barn.insert_resource(_resource)
             self.node_ui.remove_token(_resource.resource_ui)
-            return
+            Node.gui.update_ui()
+            
         elif "Product" in _resource.name:
             self.magazine.insert_resource(_resource)
             self.node_ui.remove_token(_resource.resource_ui)
-            return
+            Node.gui.update_ui()
+            
         else:
             raise ValueError()
           
@@ -95,13 +105,15 @@ class Factory(Node):
     
     def produce(self, worker):
         """Create new produce and stores it locally."""
-        self.consume_resources()
         # Don't subtract worker viability in sleep in order to avoid dividing by 0.
         sleep(100/worker.update_viability(0))
         worker.update_viability(-10)
         __produce = Product()
         self._resources.append(__produce)
         self.node_ui.add_token(__produce.resource_ui)
+        Node.gui.update_ui()
+        # Put back woker in inventory
+        self._resources.append(worker)
 
         return
 
@@ -132,23 +144,27 @@ class Field(Node):
         Field.__id += 1
         Node.gui.connect(self.node_ui, Node.barn.container_ui, {})
     
-    def produce(self):
-        """Create new produce."""
-        __produce = Food()
-        self._resources.append(__produce)
-        self.node_ui.add_token(__produce.resource_ui)
-        return
-
     def random_accident(self, worker):
         """Oh boy here I go killing again."""
         if randint(1,10) <= 2:
             worker.update_viability(-100)
 
+    def produce(self, worker):
+        """Create new produce."""
+        __produce = Food()
+        self._resources.append(__produce)
+        self.node_ui.add_token(__produce.resource_ui)
+        Node.gui.update_ui()
+        self.random_accident(worker)
+        # Put back worker to inventory
+        self._resources.append(worker)
+        return
+
     def update(self):
         """Run an update cycle on the field."""
         if self.road.get_inventory() > 0:
             self.get_resource("Worker")
-            self.produce()
+            self.produce(self.find_resource("Worker"))
             self.return_resource("Food")
             self.return_resource("Worker")
         else:
@@ -176,6 +192,9 @@ class Dining_room(Node):
             worker.update_viability(-food_value)
         else:
             worker.update_viability(food_value)
+        
+        # Put back worker to inventory
+        self._resources.append(worker)
         
     def random_accident(self):
         """Oh boy here I go killing again."""
@@ -207,15 +226,17 @@ class Flat(Node):
         Flat.__id += 1
         Node.gui.connect(Node.magazine.container_ui, self.node_ui,{})
 
-
     def rest(self, worker):
         """Create new produce."""
         self.consume_resources()
         worker.update_viability(randint(10, 40))
+        # Put back worker to inventory
+        self._resources.append(worker)
     
     def reprocreate(self):
-        self.consume_resources()
-        self._resources.append(Worker())
+        __child = Worker()
+        self._resources.append(__child)
+        self.node_ui.add_token(__child.resource_ui)
 
     def random_accident(self):
         """Oh boy here I go killing again."""
@@ -230,15 +251,15 @@ class Flat(Node):
         if self.magazine.get_inventory() > 0 and self.road.get_inventory() > 0:
             self.get_resource("Worker")
             self.get_resource("Product")
-            self.consume_resources()
             if self.road.get_inventory() > 0:
                 self.get_resource("Worker")
+                self.consume_resources()
                 self.reprocreate()
                 self.return_resource("Worker")
                 self.return_resource("Worker")
                 self.return_resource("Worker")
             else:
-                self.get_resource("Worker")
+                self.consume_resources()
                 self.rest(self.find_resource("Worker"))
                 self.return_resource("Worker")
         else:

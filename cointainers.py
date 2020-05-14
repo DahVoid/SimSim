@@ -16,12 +16,13 @@ class Container():
             if resource.update_viability(0) == 0:
                 del resource
                 return
-            else:
-                self._resources.append(resource)
-        else:
-            self._resources.append(resource)    
-
+        self._resources.append(resource)
+        self.container_ui.add_token(resource.resource_ui)
+        Container.gui.update_ui()
+  
     def get_resource(self):
+        self.container_ui.remove_token(self._resources[0].resource_ui)
+        Container.gui.update_ui()
         return self._resources.pop(0)
 
     def get_inventory(self):

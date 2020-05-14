@@ -11,7 +11,7 @@ class Simulation:
 
     def __init__(self):
 
-        self.gui = simsimui.SimSimsGUI(w=400, h=400)
+        self.gui = simsimui.SimSimsGUI(w=800, h=500)
         nodes.Node.gui = self.gui
         cointainers.Container.gui = self.gui
         resource.Resource.gui = self.gui
@@ -79,7 +79,7 @@ if __name__ == "__main__":
 
     i = 0
     sim.start_gui()
-    while i < 30:
+    while i < 60:
         sim.update()
         
         i += 1
