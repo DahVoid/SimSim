@@ -58,11 +58,11 @@ class Road(Container):
     
     def get_resource(self):
         """Reduces worker vialility on the way to work."""
-        self.reduce_viabilty(self._resources[0])
+        self.__reduce_viabilty(self._resources[0])
         return self._resources.pop(0)
 
 
-    def reduce_viabilty(self, worker):
+    def __reduce_viabilty(self, worker):
         """Traffic hurts the worker and might even kill it."""
         worker.update_viability(-3 * len(self._resources))
         return

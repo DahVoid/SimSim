@@ -107,7 +107,7 @@ class Factory(Node):
     def produce(self, worker):
         """Create new produce and stores it locally."""
         # Don't subtract worker viability in sleep in order to avoid dividing by 0.
-        sleep(1 + 20/worker.update_viability(0))
+        # sleep(1 + 20/worker.update_viability(0))
         worker.update_viability(-10)
         __produce = Product()
         self._resources.append(__produce)
@@ -165,7 +165,6 @@ class Field(Node):
         self.random_accident(worker)
         # Put back worker to inventory
         self._resources.append(worker)
-        return
 
     def update(self):
         """Run an update cycle on the field."""
@@ -246,30 +245,18 @@ class Flat(Node):
         self.node_ui.add_token(__child.resource_ui)
         Node.gui.update_ui()
 
-        """Oh boy here I go killing again."""
-        if randint(1,5) == 1:
-            return True
-        else:
-             return False
-
     def update(self):
         """Run an update cycle on the dining room. add reproduce bool to adjust late?"""
         
         if self.magazine.get_inventory() > 0 :
             self.get_resource("Worker")
             self.get_resource("Product")
-            sleep(1)
-            if self.road.get_inventory() > 0:
+            if self.road.get_inventory() > 0  and self.road.get_inventory() < 10 :
                 self.get_resource("Worker")
-                sleep(1)
                 self.consume_resources()
-                sleep(1)
                 self.reprocreate()
-                sleep(1)
                 self.return_resource("Worker")
-                sleep(0.3)
                 self.return_resource("Worker")
-                sleep(0.3)
                 self.return_resource("Worker")
             else:
                 self.consume_resources()

@@ -10,13 +10,12 @@ import gui_obj
 class Simulation:
 
     def __init__(self):
-
+        # Gui
         self.gui = simsimui.SimSimsGUI(w=800, h=500)
         nodes.Node.gui = self.gui
         cointainers.Container.gui = self.gui
         resource.Resource.gui = self.gui
-        gui_obj.gui = self.gui
-
+        # Simulation
         self.barn = cointainers.Barn()
         self.magazine = cointainers.Magazine()
         self.road = cointainers.Road()
@@ -40,7 +39,6 @@ class Simulation:
             self.road.insert_resource(__worker)
             self.road.container_ui.add_token(__worker.resource_ui)
 
-
     def refresh_priority_dict(self):
         self.priority_list = []
         for node in self.factories:
@@ -58,14 +56,16 @@ class Simulation:
         self.gui.shoot()
 
     def start_gui(self):
-        self.barn.container_ui.autoplace(0,3)
-        self.road.container_ui.autoplace(1,3)
-        self.magazine.container_ui.autoplace(2,3)
+        self.barn.container_ui.autoplace(0, len(self.priority_list) + 3)
+        self.road.container_ui.autoplace(1, len(self.priority_list) + 3)
+        self.magazine.container_ui.autoplace(2, len(self.priority_list) + 3)
         self.refresh_priority_dict()
         for node in self.priority_list:
             node.node_ui.autoplace(self.priority_list.index(node) + 3, len(self.priority_list) + 3)
 
     def update(self):
+        
+        
         """For each cycle update the priority list """
 
         self.refresh_priority_dict()
@@ -74,19 +74,27 @@ class Simulation:
             node.update()
             if self.road.get_inventory() == 0:
                 break
-            sleep(0.1)
         
 if __name__ == "__main__":
-    sim = Simulation()
+    
+    total = 0
+    for _ in range(100):
+        i = 0
+        sim = Simulation()
 
-    i = 0
-    sim.start_gui()
-    sim.update()
 
-    while sim.road.get_inventory() > 0:
+        sim.start_gui()
         sim.update()
-        
-        i += 1
-    print("Amount of update cycles: " + str(i))
+
+        while sim.road.get_inventory() > 0:
+            sim.update()
+            
+            i += 1
+        print("Days/cycles completed: " + str(i))
+
+        sim.stop_simulation()
+        total += i
+        current_avg = total/(_ + 1)
+        print("Current avg: " + str(current_avg))
+
     input()
-    sim.stop_simulation()
