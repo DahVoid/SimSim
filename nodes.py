@@ -97,7 +97,7 @@ class Factory(Node):
     """Factory node, produces a product when a worker is present."""
 
     __id = 0
-    __gui_properties = {"lable":"Factory", "color":"#ff0000", "fill":"#ffffff"}
+    __gui_properties = {"lable":"Bryggeri", "color":"#ff0000", "fill":"#ffffff"}
     def __init__(self):
         """Create the Factory, assign id."""
         super().__init__("Factory" + str(Factory.__id),Factory.__gui_properties)
@@ -144,7 +144,7 @@ class Field(Node):
     """Field node, produces food when a worker is present."""
     
     __id = 0
-    __gui_properties = {"lable":"Field", "color":"#00ff00", "fill":"#ffffff"}
+    __gui_properties = {"lable":"Rondellen Pizzeria", "color":"#00ff00", "fill":"#ffffff"}
     def __init__(self):
         """Create the Field, assign id."""
         super().__init__("Field" + str(Field.__id), Field.__gui_properties)
@@ -181,7 +181,7 @@ class Dining_room(Node):
     """Dining_room node, restores worker viability."""
 
     __id = 0
-    __gui_properties = {"lable":"Dining room", "color":"#555555", "fill":"#ffffff"}
+    __gui_properties = {"lable":"BTH", "color":"#555555", "fill":"#ffffff"}
 
     def __init__(self):
         """Create the Factory, assign id."""

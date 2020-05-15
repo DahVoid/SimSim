@@ -56,7 +56,7 @@ class Simulation:
 
     def adapt_nodes(self):
         _min_inv = 3
-        _max_inv = 10
+        _max_inv = 20
         # Barn
         if self.barn.get_inventory() < _min_inv:
             if len(self.dining_rooms) > 2:
