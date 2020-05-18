@@ -11,7 +11,7 @@ class Simulation:
 
     def __init__(self):
         # Gui
-        self.gui = simsimui.SimSimsGUI(w=800, h=500)
+        self.gui = simsimui.SimSimsGUI(w=1200, h=750)
         nodes.Node.gui = self.gui
         cointainers.Container.gui = self.gui
         resource.Resource.gui = self.gui
@@ -37,7 +37,6 @@ class Simulation:
         for _ in range(5):
             __worker = resource.Worker()
             self.road.insert_resource(__worker)
-            self.road.container_ui.add_token(__worker.resource_ui)
 
     def refresh_priority_dict(self):
         
@@ -178,7 +177,6 @@ if __name__ == "__main__":
         sim.update()
         if i % 5:
             sim.adapt_nodes()
-        
         i += 1
         print("Days survived: " + str(i))
     print("Days/cycles completed: " + str(i))

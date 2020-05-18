@@ -14,7 +14,6 @@ class Container():
         """Add resource to resources list, won't insert dead workers."""
         if "Worker" in resource.name:
             if resource.update_viability(0) <= 0:
-                self.container_ui.remove_token(resource.resource_ui)
                 Container.gui.remove(resource.resource_ui)
                 del resource
                 Container.gui.update_ui()
@@ -57,8 +56,12 @@ class Road(Container):
     
     def get_resource(self):
         """Reduces worker vialility on the way to work."""
-        self.__reduce_viabilty(self._resources[0])
-        return self._resources.pop(0)
+        worker = self._resources.pop(0)
+        self.__reduce_viabilty(worker)
+        self.container_ui.remove_token(worker.resource_ui)
+        Container.gui.update_ui()
+        
+        return worker
 
     def __reduce_viabilty(self, worker):
         """Traffic hurts the worker and might even kill it."""
