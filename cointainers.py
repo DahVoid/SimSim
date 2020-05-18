@@ -16,7 +16,6 @@ class Container():
             if resource.update_viability(0) <= 0:
                 self.container_ui.remove_token(resource.resource_ui)
                 Container.gui.remove(resource.resource_ui)
-               # self._resources.remove(resource)
                 del resource
                 Container.gui.update_ui()
                 return
@@ -60,7 +59,6 @@ class Road(Container):
         """Reduces worker vialility on the way to work."""
         self.__reduce_viabilty(self._resources[0])
         return self._resources.pop(0)
-
 
     def __reduce_viabilty(self, worker):
         """Traffic hurts the worker and might even kill it."""
