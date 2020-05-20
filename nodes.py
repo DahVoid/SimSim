@@ -93,6 +93,7 @@ class Node():
                 return resource
 
 
+
 class Factory(Node):
     """Factory node, produces a product when a worker is present."""
 
@@ -118,7 +119,7 @@ class Factory(Node):
 
     def random_accident(self, worker):
         """Oh boy here I go killing again."""
-        if randint(1,20) == 1:
+        if randint(1,10) == 1:
             worker.update_viability(-100)
  
     def update(self):
@@ -153,7 +154,7 @@ class Field(Node):
     
     def random_accident(self, worker):
         """Oh boy here I go killing again."""
-        if randint(1,20) == 1:
+        if randint(1,15) == 1:
             worker.update_viability(-100)
 
     def produce(self, worker):

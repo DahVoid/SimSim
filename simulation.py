@@ -54,6 +54,7 @@ class Simulation:
         # todo prioritize flats if needed 
 
     def adapt_nodes(self):
+        # Todo calculate mean consumpiton and production per resource
         _min_inv = 3
         _max_inv = 20
         # Barn
@@ -175,7 +176,7 @@ if __name__ == "__main__":
     i = 1
     while sim.road.get_inventory() > 0:
         sim.update()
-        if i % 5:
+        if i % 10:
             sim.adapt_nodes()
         i += 1
         print("Days survived: " + str(i))
