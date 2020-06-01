@@ -1,4 +1,4 @@
-"""Simulation"""
+"""Simulation."""
 from time import sleep 
 import cointainers
 import resource
@@ -180,6 +180,8 @@ if __name__ == "__main__":
             sim.adapt_nodes()
         i += 1
         print("Days survived: " + str(i))
+        print("Population: " + str(sim.road.get_inventory()))
+        print("_____________________________________")
     print("Days/cycles completed: " + str(i))
 
     sim.stop_gui()
