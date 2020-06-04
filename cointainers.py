@@ -1,34 +1,53 @@
 """Contains the container classes."""
 from resource import Worker
+from threading import Lock
 
 class Container():
     """Subclass to Place and super class to the container classes."""
     gui = None
     def __init__(self, name, gui_properties):
         """Initialize the container."""
+        self.lock = Lock()
         self.name = name
         self._resources = []
         self.container_ui = Container.gui.create_place_ui(gui_properties)
     
     def insert_resource(self, resource):
         """Add resource to resources list, won't insert dead workers."""
-        if "Worker" in resource.name:
-            if resource.update_viability(0) <= 0:
-                Container.gui.remove(resource.resource_ui)
-                del resource
-                Container.gui.update_ui()
-                return
-        self._resources.append(resource)
-        self.container_ui.add_token(resource.resource_ui)
-        Container.gui.update_ui()
+        self.lock.acquire()
+        try:
+            if "Worker" in resource.name:
+                if resource.update_viability(0) <= 0:
+                    Container.gui.remove(resource.resource_ui)
+                    del resource
+                    Container.gui.update_ui()
+                    return
+            self._resources.append(resource)
+            self.container_ui.add_token(resource.resource_ui)
+            Container.gui.update_ui()
+        finally:
+            self.lock.release()
   
     def get_resource(self):
-        self.container_ui.remove_token(self._resources[0].resource_ui)
-        Container.gui.update_ui()
-        return self._resources.pop(0)
+        self.lock.acquire()
+        try:
+            if len(self._resources) > 0:
+                self.container_ui.remove_token(self._resources[0].resource_ui)
+                Container.gui.update_ui()
+                return self._resources.pop(0)
+            else:
+                return None
+        finally:
+            self.lock.release()
 
     def get_inventory(self):
-        return len(self._resources)
+        self.lock.acquire()
+        try:
+            return len(self._resources)
+        finally:
+            self.lock.release()
+            
+        
 
 class Magazine(Container): 
     """Magazine stores products."""
@@ -56,12 +75,18 @@ class Road(Container):
     
     def get_resource(self):
         """Reduces worker vialility on the way to work."""
-        worker = self._resources.pop(0)
-        self.__reduce_viabilty(worker)
-        self.container_ui.remove_token(worker.resource_ui)
-        Container.gui.update_ui()
-        
-        return worker
+        self.lock.acquire()
+        try:
+            if len(self._resources) > 0:
+                worker = self._resources.pop(0)
+                self.__reduce_viabilty(worker)
+                self.container_ui.remove_token(worker.resource_ui)
+                Container.gui.update_ui()
+                return worker
+            else:
+                return None
+        finally:
+            self.lock.release()
 
     def __reduce_viabilty(self, worker):
         """Traffic hurts the worker and might even kill it."""

@@ -3,18 +3,22 @@
 from resource import Food, Product, Worker
 from time import sleep
 from random import randint
+from threading import Thread, Event
 
-class Node():
+class Node(Thread):
     """Superclass for producing classes."""
 
     barn = None
     road = None
     magazine = None
     gui = None
-
+    
     def __init__(self, name, gui_properties):
         """Initialize the Node."""
         super().__init__()
+        Thread.__init__(self)
+        self.event = Event()
+        self.active = True
         self.name = name
         self._resources = []
         self._time_idle = 0
@@ -22,6 +26,13 @@ class Node():
         Node.gui.connect(self.node_ui, Node.road.container_ui, {"arrows":True})
         Node.gui.connect(Node.road.container_ui, self.node_ui, {"arrows":True})
     
+    def run(self):
+
+        while self.active:
+            self.event.wait()
+            self.update()
+            Node.gui.update_ui()
+
     def update(self):
         """Update the state of the node."""
         raise NotImplementedError
@@ -43,29 +54,38 @@ class Node():
                 
     def get_resource(self, resource_type):
         """Get a "Worker", "Food" or "Product" from their respective cointainer"""
-        __resource = None
-        if resource_type == "Worker" and self.road.get_inventory() > 0:
-            __resource = Node.road.get_resource()
-            self._resources.append(__resource)
-            self.node_ui.add_token(__resource.resource_ui)
-            Node.gui.update_ui()
-        elif resource_type == "Food" and self.barn.get_inventory() > 0:
-            __resource = Node.barn.get_resource()
-            self._resources.append(__resource)
-            self.node_ui.add_token(__resource.resource_ui)
-            Node.gui.update_ui()
-        elif resource_type == "Product" and self.magazine.get_inventory() > 0:
-            __resource = Node.magazine.get_resource()
-            self._resources.append(__resource)
-            self.node_ui.add_token(__resource.resource_ui)
-            Node.gui.update_ui()
+        resource = None
+        sleep(0.2)
+        if resource_type == "Worker":
+            resource = Node.road.get_resource()
+            if resource:
+                self._resources.append(resource)
+                self.node_ui.add_token(resource.resource_ui)
+                Node.gui.update_ui()
+                return True
+        elif resource_type == "Food":
+            resource = Node.barn.get_resource()
+            if resource:
+                self._resources.append(resource)
+                self.node_ui.add_token(resource.resource_ui)
+                Node.gui.update_ui()
+                return True
+        elif resource_type == "Product":
+            resource = Node.magazine.get_resource()
+            if resource:
+                self._resources.append(resource)
+                self.node_ui.add_token(resource.resource_ui)
+                Node.gui.update_ui()
+                return True
         else:
             raise ValueError()   
+
+        return False
         
     def return_resource(self, resource_type):
 
         _resource = self.find_resource(resource_type)
-
+        sleep(0.2)
         if "Worker" in _resource.name:
             self.road.insert_resource(_resource)
             self.node_ui.remove_token(_resource.resource_ui)
@@ -93,7 +113,6 @@ class Node():
                 return resource
 
 
-
 class Factory(Node):
     """Factory node, produces a product when a worker is present."""
 
@@ -108,7 +127,7 @@ class Factory(Node):
     def produce(self, worker):
         """Create new produce and stores it locally."""
         # Don't subtract worker viability in sleep in order to avoid dividing by 0.
-        # sleep(1 + 20/worker.update_viability(0))
+        sleep(1 + 10/worker.update_viability(0))
         worker.update_viability(-10)
         __produce = Product()
         self._resources.append(__produce)
@@ -119,18 +138,18 @@ class Factory(Node):
 
     def random_accident(self, worker):
         """Oh boy here I go killing again."""
-        if randint(1,10) == 1:
+        if randint(1,20) == 1:
             worker.update_viability(-100)
  
     def update(self):
         """Run an update cycle on the factory."""
-        if self.road.get_inventory() > 0:
-            self.get_resource("Worker")
-            __worker = self.find_resource("Worker")
+        if self.get_resource("Worker"):
+            
+            worker = self.find_resource("Worker")
             # Put back woker in inventory
-            self._resources.append(__worker)
-            self.random_accident(__worker)
-            if __worker.update_viability(0) < 1:
+            self._resources.append(worker)
+            self.random_accident(worker)
+            if worker.update_viability(0) < 1:
                 self.return_resource("Worker")
                 return
             else:
@@ -169,8 +188,8 @@ class Field(Node):
 
     def update(self):
         """Run an update cycle on the field."""
-        if self.road.get_inventory() > 0:
-            self.get_resource("Worker")
+        if self.get_resource("Worker"):
+            
             self.produce(self.find_resource("Worker"))
             self.return_resource("Food")
             self.return_resource("Worker")
@@ -212,11 +231,12 @@ class Dining_room(Node):
 
     def update(self):
         """Run an update cycle on the dining room."""
-        if self.barn.get_inventory() > 0 and self.road.get_inventory() > 0:
-            self.get_resource("Worker")
-            self.get_resource("Food")
-            self.produce(self.find_resource("Worker"))
-            self.return_resource("Worker")
+        if self.get_resource("Worker"):
+            if self.get_resource("Food"):
+                self.produce(self.find_resource("Worker"))
+                self.return_resource("Worker")
+            else:
+                self.return_resource("Worker")
         else:
             self._time_idle += 1
     
@@ -255,12 +275,13 @@ class Flat(Node):
 
     def update(self):
         """Run an update cycle on the dining room. add reproduce bool to adjust late?"""
-        
-        if self.magazine.get_inventory() > 0 :
+        self.get_resource("Product")
+        self.get_resource("Worker")
+        if self.procreating:
             self.get_resource("Worker")
-            self.get_resource("Product")
-            if self.road.get_inventory() > 0  and self.procreating:
-                self.get_resource("Worker")
+
+        if (len(self._resources) == 2 and not self.procreating) or (len(self._resources) == 3 and self.procreating):
+            if len(self._resources) == 3:
                 self.consume_resources()
                 self.reprocreate()
                 self.return_resource("Worker")
@@ -271,5 +292,11 @@ class Flat(Node):
                 self.rest(self.find_resource("Worker"))
                 self.return_resource("Worker")
         else:
+            while len(self._resources) > 0:
+                if "Worker" in self._resources[0].name:
+                    self.return_resource("Worker")
+                else:
+                    self.return_resource("Product")
+                
             self._time_idle += 1
     

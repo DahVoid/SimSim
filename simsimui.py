@@ -1,9 +1,9 @@
-from tkinter import Tk, Canvas, CENTER, LAST, BOTH, font
+from tkinter import font
 from math import sqrt, sin, cos, pi
 from copy import deepcopy, copy
 import io
 import sys
-
+from mtTkinter import Tk, Canvas, CENTER, LAST, BOTH
 ''' A text and graphical user iterface for a SImSims network '''
 
 class Coords():
@@ -235,6 +235,7 @@ class UINodeComponent(UIComponent):
 
     def _draw(self):
         ''' Redefine from UIComponent '''
+        #print("tokens ",self.tokens)
         self._drawer.draw(self._tokens)
 
     def add_token(self, token_ui):
@@ -554,6 +555,7 @@ class GUINodeDrawer(GUIDrawer):
         ''' Overrides from UIDrawer '''
         GUIDrawer.draw(self)
         cps = GUIDrawer.sunflower(len(content_drawers), 1.0, 0.8*self._radius)
+        #print("content drawers ",len(content_drawers))
         for i in range(len(content_drawers)):
             content_drawers[i].drawer.position = cps[i].translate(self.position)
             content_drawers[i].draw()
