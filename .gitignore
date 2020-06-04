@@ -131,3 +131,4 @@ dmypy.json
 # Nose
 .noseids
 cover
+json_data.txt
