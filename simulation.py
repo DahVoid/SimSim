@@ -77,13 +77,13 @@ class Simulation:
                 self.active = False
                 break
 
-            self.timer.wait(2)
+            self.timer.wait(1)
             # Pause all trans
             for trans in self.all_trans:
                 trans.event.clear()
 
             print("waiting to catch up")
-            self.timer.wait(1)
+            self.timer.wait(2)
 
             print("adapting")
             # Barn
